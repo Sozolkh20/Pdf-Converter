@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Free PDF Converter</title>
+  <style>
+    /* CSS Styling */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      max-width: 1200px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #333333;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #666666;
+      margin-bottom: 30px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .tool-card {
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .tool-card img {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 15px;
+    }
+
+    .tool-card h3 {
+      font-size: 18px;
+      color: #333333;
+      margin-bottom: 10px;
+    }
+
+    .tool-card p {
+      font-size: 14px;
+      color: #666666;
+      margin: 0;
+    }
+
+    .upload-section {
+      margin-top: 20px;
+    }
+
+    .upload-section input {
+      margin-bottom: 10px;
+    }
+
+    .upload-section button {
+      background-color: #007bff;
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    .upload-section button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Online Free PDF Converter</h1>
+    <p>Convert, merge, split, compress, and edit PDFs online for free.</p>
+
+    <div class="tools-grid">
+      <div class="tool-card" id="mergePdf">
+        <img src="assets/merge-icon.png" alt="Merge PDF">
+        <h3>Merge PDF</h3>
+        <p>Combine multiple PDFs into one.</p>
+      </div>
+
+      <div class="tool-card" id="splitPdf">
+        <img src="assets/split-icon.png" alt="Split PDF">
+        <h3>Split PDF</h3>
+        <p>Extract pages from a PDF.</p>
+      </div>
+
+      <div class="tool-card" id="compressPdf">
+        <img src="assets/compress-icon.png" alt="Compress PDF">
+        <h3>Compress PDF</h3>
+        <p>Reduce the size of your PDF.</p>
+      </div>
+
+      <div class="tool-card" id="convertPdf">
+        <img src="assets/convert-icon.png" alt="Convert PDF">
+        <h3>Convert PDF</h3>
+        <p>Convert PDFs to Word, Excel, JPG, etc.</p>
+      </div>
+
+      <div class="tool-card" id="editPdf">
+        <img src="assets/edit-icon.png" alt="Edit PDF">
+        <h3>Edit PDF</h3>
+        <p>Add text, images, and annotations.</p>
+      </div>
+
+      <div class="tool-card" id="rotatePdf">
+        <img src="assets/rotate-icon.png" alt="Rotate PDF">
+        <h3>Rotate PDF</h3>
+        <p>Rotate and reorder pages.</p>
+      </div>
+    </div>
+
+    <div class="upload-section" id="mergeSection" style="display: none;">
+      <input type="file" id="pdfFiles" accept="application/pdf" multiple>
+      <button id="mergeButton">Merge PDFs</button>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript Functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const tools = {
+        mergePdf: 'merge',
+        splitPdf: 'split',
+        compressPdf: 'compress',
+        convertPdf: 'convert',
+        editPdf: 'edit',
+        rotatePdf: 'rotate',
+      };
+
+      const mergeSection = document.getElementById('mergeSection');
+      const pdfFilesInput = document.getElementById('pdfFiles');
+      const mergeButton = document.getElementById('mergeButton');
+
+      Object.keys(tools).forEach((toolId) => {
+        const toolCard = document.getElementById(toolId);
+        if (toolCard) {
+          toolCard.addEventListener('click', () => {
+            if (tools[toolId] === 'merge') {
+              mergeSection.style.display = 'block';
+            } else {
+              alert(`Feature "${tools[toolId]}" is under development.`);
+            }
+          });
+        }
+      });
+
+      mergeButton.addEventListener('click', async () => {
+        const files = pdfFilesInput.files;
+        if (files.length < 2) {
+          alert('Please select at least 2 PDF files to merge.');
+          return;
+        }
+
+        const formData = new FormData();
+        for (const file of files) {
+          formData.append('pdfs', file);
+        }
+
+        try {
+          const response = await fetch('https://your-backend-url.com/merge-pdf', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (response.ok) {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'merged.pdf';
+            a.click();
+          } else {
+            alert('Error merging PDFs. Please try again.');
+          }
+        } catch (error) {
+          console.error(error);
+          alert('An error occurred. Please try again.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
